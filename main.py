@@ -11,7 +11,7 @@ import platform
 
 # "  BCLM  [ui8 ]  60 (bytes 3c)"
 OUTPUT_RE = re.compile(r"  BCLM  \[([a-z0-9]*)\s*\]  ([0-9a-f]+) \(bytes (.+)\)")
-PMSET_RE = re.compile(r"VACTDisabled\s+1")
+PMSET_RE = re.compile(r"VACTDisabled[\s]+0")
 
 
 def get_smc_binary_path(script_directory) -> str:
@@ -26,13 +26,13 @@ def get_smc_binary_path(script_directory) -> str:
         out = subprocess.run(["make"], capture_output=True)
         os.chdir(current_dir)
         if out.returncode != 0:
-            print("SMC build failed!", file=sys.stderr)
+            print("ERROR: SMC build failed!", file=sys.stderr)
             print(out.stderr)
             exit(1)
         
         exists = os.path.exists(binary_path)
         if not exists:
-            print("SMC binary does not exist at {}!".format(binary_path), file=sys.stderr)
+            print("ERROR: SMC binary does not exist at {}!".format(binary_path), file=sys.stderr)
             exit(1)
     
     return binary_path
@@ -69,7 +69,7 @@ def get_and_check_current_battery_charge_limit(smc_binary_path) -> int:
     get_value_out = subprocess.run([smc_binary_path, "-k", "BCLM", "-r"], capture_output=True)
     # print(get_value_out)
     if (get_value_out.returncode != 0) or (len(get_value_out.stdout) == 0):
-        print("Battery limit value read failed:", file=sys.stderr)
+        print("ERROR: Battery limit value read failed:", file=sys.stderr)
         print(get_value_out.stderr, file=sys.stderr)
         exit(1)
 
@@ -78,7 +78,7 @@ def get_and_check_current_battery_charge_limit(smc_binary_path) -> int:
 
     parse_result = OUTPUT_RE.match(out_string)
     if parse_result is None:
-        error_text = "SMC out parse failed:\nvalid \"{}\"\ncurrent \"{}\"".format(
+        error_text = "ERROR: SMC out parse failed\nvalid \"{}\"\ncurrent \"{}\"".format(
             "  BCLM  [ui8 ]  60 (bytes 3c)", 
             out_string
         )
@@ -94,7 +94,7 @@ def get_and_check_current_battery_charge_limit(smc_binary_path) -> int:
     current_value_valid = (current_value >= 20) and (current_value <= 100)
     if not value_type_valid or not current_value_valid:
         error_text = \
-            "Invalid SMC output values: type = {}, value = {}\n"\
+            "ERROR: Invalid SMC output values, type = {}, value = {}\n"\
             "must be: type = {}, value = {}"\
             .format(value_type, current_value, "ui8", "20 <= val <= 100")
         print(error_text, file=sys.stderr)
@@ -110,13 +110,16 @@ def is_root_user() -> bool:
 def is_system_battery_care_activated()-> bool:
     pm_set_out = subprocess.run(["pmset", "-g"], capture_output=True)
     if (pm_set_out.returncode != 0) or (len(pm_set_out.stderr) != 0):
-        print("'pmset -g' command call failed", file=sys.stderr)
+        print("ERROR: 'pmset -g' command call failed", file=sys.stderr)
         exit(1)
     
     out_string = pm_set_out.stdout.decode("utf-8").rstrip("\n")
-
-    result = PMSET_RE.match(out_string)
-    if result is not None:
+    # print(out_string)
+    
+    result = PMSET_RE.findall(out_string)
+    # print(result)
+    
+    if len(result) >= 1:
         return True
     else:
         return False
@@ -125,31 +128,31 @@ def is_system_battery_care_activated()-> bool:
 def set_current_battery_charge_limit(smc_binary_path, value) -> int:
     is_root = is_root_user()
     if not is_root:
-        print("Set limit must be run as root", file=sys.stderr)
+        print("ERROR: Set limit must be run as root", file=sys.stderr)
         exit(1)
 
     if (value > 100) or (value < 20) or (not isinstance(value, int)):
-        print("New limit integer value must be: 20 <= val <= 100", file=sys.stderr)
+        print("ERROR: New limit integer value must be: 20 <= val <= 100", file=sys.stderr)
         exit(1)
 
     system_battery_care_is_active = is_system_battery_care_activated()
     if system_battery_care_is_active:
-        print("OSX Catalina 10.15.5 battery care is active. Please, turn off it and try again", file=sys.stderr)
+        print("ERROR: OSX Catalina 10.15.5 battery care is active. Please, turn off it and try again", file=sys.stderr)
         exit(1)
 
     hex_value = hex(value).replace("0x", "")
     if hex_value is None:
-        print("Value convert to hex failed", file=sys.stderr)
+        print("ERROR: Value convert to hex failed", file=sys.stderr)
         exit(1)
     if len(hex_value) != 2:
-        print("Value convert to hex failed, too short hex: {}".format(hex_value), file=sys.stderr)
+        print("ERROR: Value convert to hex failed, too short hex: {}".format(hex_value), file=sys.stderr)
         exit(1)
 
     # sudo ./smc -k BCLM -w 3c
     set_value_out = subprocess.run([smc_binary_path, "-k", "BCLM", "-w", hex_value], capture_output=True)
     # print(set_value_out)
     if (set_value_out.returncode != 0):
-        print("Battery limit value set failed:", file=sys.stderr)
+        print("ERROR: Battery limit value set failed:", file=sys.stderr)
         print(set_value_out.stderr, file=sys.stderr)
         exit(1)
 
@@ -159,17 +162,17 @@ def set_current_battery_charge_limit(smc_binary_path, value) -> int:
 def change_battery_limit_value(smc_binary_path, value):
     current_value = get_and_check_current_battery_charge_limit(smc_binary_path)
     if current_value is None:
-        print("Battery limit previous value read failed", file=sys.stderr)
+        print("ERROR: Battery limit previous value read failed", file=sys.stderr)
         exit(1)
 
-    print("Previous battery charge limit is {}%".format(current_value))
+    print("Current battery charge limit is {}%".format(current_value))
 
     success = set_current_battery_charge_limit(smc_binary_path, value)
     if success:
         new_value = get_and_check_current_battery_charge_limit(smc_binary_path)
         print("New battery charge limit is {}%".format(new_value))
     else:
-        print("Battery limit value set failed", file=sys.stderr)
+        print("ERROR: Battery limit value set failed", file=sys.stderr)
         exit(1)
 
 
@@ -181,7 +184,7 @@ def print_current_limit(smc_binary_path):
 def main():
     current_system = platform.system()
     if current_system != "Darwin":
-        print("Script must be run using OSX platform only", file=sys.stderr)
+        print("ERROR: Script must be run using OSX platform only", file=sys.stderr)
         exit(1)
 
     # Script directory
