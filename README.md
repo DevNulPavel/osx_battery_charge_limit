@@ -4,11 +4,11 @@ MacOS / OSX limit maximum battery charge.
 Info
 ------------------------
 This is script for changing maximum battery charge value on macbook with set SMC key value. 
-It uses smc-command binary from smcFanControl for SMC keys access [smcFanControl](https://github.com/hholtmann/smcFanControl "smcFanControl"). 
+It uses *smc-command* binary from smcFanControl project for SMC keys access [smcFanControl](https://github.com/hholtmann/smcFanControl "smcFanControl"). 
 
 Script changes SMC key "BCLM" (Battery control level maximum). Script sets maximum battery charge percent value from 20% to 100%.
 
-You can reset macbook SMC for rollback script changes in case of some problems.
+You can reset macbook's SMC for rollback script changes in case of some problems.
 
 Tests 
 ------------------------
