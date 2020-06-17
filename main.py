@@ -11,6 +11,7 @@ import platform
 
 # "  BCLM  [ui8 ]  60 (bytes 3c)"
 OUTPUT_RE = re.compile(r"  BCLM  \[([a-z0-9]*)\s*\]  ([0-9a-f]+) \(bytes (.+)\)")
+PMSET_RE = re.compile(r"VACTDisabled\s+1")
 
 
 def get_smc_binary_path(script_directory) -> str:
@@ -114,7 +115,8 @@ def is_system_battery_care_activated()-> bool:
     
     out_string = pm_set_out.stdout.decode("utf-8").rstrip("\n")
 
-    if "VACTDisabled 0" in out_string:
+    result = PMSET_RE.match(out_string)
+    if result is not None:
         return True
     else:
         return False
