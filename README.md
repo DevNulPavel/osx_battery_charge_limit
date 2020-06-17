@@ -10,6 +10,8 @@ It uses *smc-command* binary from smcFanControl project for SMC keys access [smc
 
 Script changes SMC key "BCLM" (Battery control level maximum). Script sets maximum battery charge percent value from 20% to 100%.
 
+You can check real battery charge level with [coconutbattery](https://www.coconut-flavour.com/coconutbattery/). MacOS shows charge approximately 3-5% greater than real value.
+
 You can reset macbook's SMC for rollback script changes in case of some problems.
 
 Tests 
