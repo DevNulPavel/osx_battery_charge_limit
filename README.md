@@ -1,7 +1,9 @@
 MacOS / OSX limit maximum battery charge.
 ========================
 
-Info
+Li-ion and polymer batteries (like the one in your MacBook) last the longest when operating between 30 and 80 percent. Keeping your battery at 100% at all times can shorten the lifespan of your notebook significantly. More information can be found here: https://batteryuniversity.com/learn/article/how_to_charge_when_to_charge_table
+
+Script info
 ------------------------
 This is script for changing maximum battery charge value on macbook with set SMC key value. 
 It uses *smc-command* binary from smcFanControl project for SMC keys access [smcFanControl](https://github.com/hholtmann/smcFanControl "smcFanControl"). 
@@ -27,6 +29,10 @@ sudo python3 main.py -s 65
 # Reset maximum charge level to 100%
 sudo python3 main.py -r
 ```
+
+Warning!
+------------------------
+I do not take any responsibility for any sort of damage in result of using this tool! Alltough this had no negative side effects for me, scripts still taps in some very low level system functions that are not ment to be tampered with. Use it at your own risk!
 
 Alternatives with GUI:
 ------------------------
