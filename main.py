@@ -106,6 +106,20 @@ def is_root_user() -> bool:
     return (os.geteuid() == 0)
 
 
+def is_system_battery_care_activated()-> bool:
+    pm_set_out = subprocess.run(["pmset", "-g"], capture_output=True)
+    if (pm_set_out.returncode != 0) or (len(pm_set_out.stderr) != 0):
+        print("'pmset -g' command call failed", file=sys.stderr)
+        exit(1)
+    
+    out_string = pm_set_out.stdout.decode("utf-8").rstrip("\n")
+
+    if "VACTDisabled 0" in out_string:
+        return True
+    else:
+        return False
+
+
 def set_current_battery_charge_limit(smc_binary_path, value) -> int:
     is_root = is_root_user()
     if not is_root:
@@ -114,6 +128,11 @@ def set_current_battery_charge_limit(smc_binary_path, value) -> int:
 
     if (value > 100) or (value < 20) or (not isinstance(value, int)):
         print("New limit integer value must be: 20 <= val <= 100", file=sys.stderr)
+        exit(1)
+
+    system_battery_care_is_active = is_system_battery_care_activated()
+    if system_battery_care_is_active:
+        print("OSX Catalina 10.15.5 battery care is active. Please, turn off it and try again", file=sys.stderr)
         exit(1)
 
     hex_value = hex(value).replace("0x", "")
