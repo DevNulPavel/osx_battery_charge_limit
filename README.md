@@ -41,6 +41,7 @@ Alternatives with GUI:
 
 Other references:
 ------------------------
+- [coconutbattery](https://www.coconut-flavour.com/coconutbattery/)
 - [smcFanControl](https://github.com/hholtmann/smcFanControl)
 - [libsmc](https://github.com/beltex/libsmc)
 - [VirtualSMC](https://github.com/acidanthera/VirtualSMC)
