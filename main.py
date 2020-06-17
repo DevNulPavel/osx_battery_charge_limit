@@ -56,7 +56,7 @@ def get_arguments():
                         dest="set", 
                         type=int,
                         default=None,
-                        help="Target charge limit in percents, from 40 to 100")
+                        help="Set charge limit in percents, from 20 to 100")
 
     args = parser.parse_args()
     
@@ -177,7 +177,7 @@ def main():
     elif args.set:
         change_battery_limit_value(smc_binary_path, args.set)
     elif args.reset:
-        change_battery_limit_value(smc_binary_path, 60)
+        change_battery_limit_value(smc_binary_path, 100)
     else:
         print_current_limit(smc_binary_path)
 

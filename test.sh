@@ -15,10 +15,10 @@
 # 2. write 3c value to SMC
 # -> sudo ./smc -k BCLM -w 3c
 
-# python3 main.py
-# python3 main.py -c
-# python3 main.py -s 65
-# sudo python3 main.py -s 65
-# sudo python3 main.py -r
+python3 main.py
+python3 main.py -c
+python3 main.py -s 65
+sudo python3 main.py -s 65
+sudo python3 main.py -r
 
 
