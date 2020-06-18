@@ -18,6 +18,16 @@ Tests
 ------------------------
 Tested on Macbook Pro 13 (mid 2020, 2 ports), OSX Catalina 10.15.5
 
+Requirements
+------------------------
+```
+# Python3
+brew install python3
+
+# Command-line tools
+xcode-select --install
+```
+
 Usage examples
 ------------------------
 ```
