@@ -30,6 +30,7 @@ xcode-select --install
 
 Usage examples
 ------------------------
+Reboot is recommended after changing value.  System update can reset SMC, and you will need to start script to set limit again.
 ```
 # Get current charge limit
 python3 main.py
