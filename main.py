@@ -170,7 +170,8 @@ def change_battery_limit_value(smc_binary_path, value):
     success = set_current_battery_charge_limit(smc_binary_path, value)
     if success:
         new_value = get_and_check_current_battery_charge_limit(smc_binary_path)
-        print("New battery charge limit is {}%".format(new_value))
+        print("New battery charge limit is {}%\n".format(new_value))
+        print('Please reboot your notebook and check applied limit value with "-c" flag')
     else:
         print("ERROR: Battery limit value set failed", file=sys.stderr)
         exit(1)
