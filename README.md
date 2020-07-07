@@ -16,7 +16,9 @@ You can reset macbook's SMC for rollback script changes in case of some problems
 
 Tests 
 ------------------------
-Tested on Macbook Pro 13 (mid 2020, 2 ports), OSX Catalina 10.15.5
+Tested on:
+- Macbook Pro 13 (mid 2020, 2 ports), OSX Catalina 10.15.5
+- Macbook Pro 13 (mid 2019, 4 ports), OSX Catalina 10.15.5
 
 Requirements
 ------------------------
@@ -30,7 +32,7 @@ xcode-select --install
 
 Usage examples
 ------------------------
-Reboot is recommended after changing value.  System update can reset SMC, and you will need to start script to set limit again.
+__Highly recomended turn off OSX Catalina 10.15.5 system battery care function before set limit value!__ Reboot is recommended after changing value.  System update can reset SMC, and you will need to start script to set limit again.
 ```
 # Get current charge limit
 python3 main.py
