@@ -59,6 +59,7 @@ Other references:
 ------------------------
 - [coconutbattery](https://www.coconut-flavour.com/coconutbattery/)
 - [smcFanControl](https://github.com/hholtmann/smcFanControl)
+- [SMCKit](https://github.com/beltex/SMCKit)
 - [libsmc](https://github.com/beltex/libsmc)
 - [smcutil](https://github.com/glexey/smcutil)
 - [smc_util](https://github.com/alexleigh/smc_util)
