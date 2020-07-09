@@ -53,6 +53,7 @@ Alternatives with GUI:
 ------------------------
 - [AlDente](https://github.com/davidwernhart/AlDente)
 - [BatteryStatusShow](https://github.com/sicreative/BatteryStatusShow)
+- [charge-limiter](https://github.com/godly-devotion/charge-limiter)
 
 Other references:
 ------------------------
