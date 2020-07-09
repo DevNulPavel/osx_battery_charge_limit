@@ -9,13 +9,17 @@ import re
 import sys
 import platform
 
+# TODO: There are some problems after set limit value in case of using smc util from SMCFanControl
+SMC_UTIL_FROM_APPLE = True
+
 # "  BCLM  [ui8 ]  60 (bytes 3c)"
-OUTPUT_RE = re.compile(r"  BCLM  \[([a-z0-9]*)\s*\]  ([0-9a-f]+) \(bytes (.+)\)")
+OUTPUT_RE_SMC_FAN_CONTROL = re.compile(r"  BCLM  \[([a-z0-9]*)\s*\]  ([0-9a-f]+) \(bytes (.+)\)")
+OUTPUT_RE_FROM_APPLE = re.compile(r"[0-9]+")
+
 PMSET_RE = re.compile(r"VACTDisabled[\s]+0")
 
-
-def get_smc_binary_path(script_directory) -> str:
-    smc_directory = os.path.join(script_directory, "smc-command")
+def get_smc_binary_path_from_fan_control(script_directory) -> str:
+    smc_directory = os.path.join(script_directory, "smc-command_from_fan_control")
 
     binary_path = os.path.join(smc_directory, "smc")
     exists = os.path.exists(binary_path)
@@ -37,6 +41,19 @@ def get_smc_binary_path(script_directory) -> str:
     
     return binary_path
         
+
+def get_smc_binary_path_from_apple(script_directory) -> str:
+    smc_directory = os.path.join(script_directory, "smc-command_from_apple")
+
+    binary_path = os.path.join(smc_directory, "smcutil")
+    exists = os.path.exists(binary_path)
+    
+    if not exists:
+        print("ERROR: SMC binary does not exist at {}!".format(binary_path), file=sys.stderr)
+        exit(1)
+    
+    return binary_path
+
 
 def get_arguments():
     parser = argparse.ArgumentParser(description="Macbook battery charge limit using SMC")
@@ -66,7 +83,10 @@ def get_arguments():
 
 def get_and_check_current_battery_charge_limit(smc_binary_path) -> int:
     #./smc -r -k BCLM
-    get_value_out = subprocess.run([smc_binary_path, "-k", "BCLM", "-r"], capture_output=True)
+    if SMC_UTIL_FROM_APPLE:
+        get_value_out = subprocess.run([smc_binary_path, "-r", "BCLM"], capture_output=True)
+    else:
+        get_value_out = subprocess.run([smc_binary_path, "-k", "BCLM", "-r"], capture_output=True)
     # print(get_value_out)
     if (get_value_out.returncode != 0) or (len(get_value_out.stdout) == 0):
         print("ERROR: Battery limit value read failed:", file=sys.stderr)
@@ -76,29 +96,50 @@ def get_and_check_current_battery_charge_limit(smc_binary_path) -> int:
     out_string = get_value_out.stdout.decode("utf-8").rstrip("\n")
     # print(out_string)
 
-    parse_result = OUTPUT_RE.match(out_string)
-    if parse_result is None:
-        error_text = "ERROR: SMC out parse failed\nvalid \"{}\"\ncurrent \"{}\"".format(
-            "  BCLM  [ui8 ]  60 (bytes 3c)", 
-            out_string
-        )
-        print(error_text, file=sys.stderr)
-        exit(1)
+    if SMC_UTIL_FROM_APPLE:
+        parse_result = OUTPUT_RE_FROM_APPLE.match(out_string)
 
-    #print(get_value_out.stdout)
-    value_type = parse_result.group(1)
-    current_value = int(parse_result.group(2))
-    #bytes_value = parse_result.group(3)
-    
-    value_type_valid = (value_type == "ui8")
-    current_value_valid = (current_value >= 20) and (current_value <= 100)
-    if not value_type_valid or not current_value_valid:
-        error_text = \
-            "ERROR: Invalid SMC output values, type = {}, value = {}\n"\
-            "must be: type = {}, value = {}"\
-            .format(value_type, current_value, "ui8", "20 <= val <= 100")
-        print(error_text, file=sys.stderr)
-        exit(1)
+        if parse_result is None:
+            error_text = "ERROR: SMC out parse failed\nvalid \"{}\"\ncurrent \"{}\"".format("60%", out_string)        
+            print(error_text, file=sys.stderr)
+            exit(1)
+
+        current_value = int(parse_result.group(0))
+
+        current_value_valid = (current_value >= 20) and (current_value <= 100)
+        if not current_value_valid:
+            error_text = \
+                "ERROR: Invalid SMC output values value = {}\n"\
+                "must be: value = {}"\
+                .format(current_value, "20 <= val <= 100")
+            print(error_text, file=sys.stderr)
+            exit(1)
+
+    else:
+        parse_result = OUTPUT_RE_SMC_FAN_CONTROL.match(out_string)
+
+        if parse_result is None:
+            error_text = "ERROR: SMC out parse failed\nvalid \"{}\"\ncurrent \"{}\"".format(
+                "  BCLM  [ui8 ]  60 (bytes 3c)", 
+                out_string
+            )
+            print(error_text, file=sys.stderr)
+            exit(1)
+
+        #print(get_value_out.stdout)
+        value_type = parse_result.group(1)
+        current_value = int(parse_result.group(2))
+        #bytes_value = parse_result.group(3)
+        
+        value_type_valid = (value_type == "ui8")
+        current_value_valid = (current_value >= 20) and (current_value <= 100)
+        if not value_type_valid or not current_value_valid:
+            error_text = \
+                "ERROR: Invalid SMC output values, type = {}, value = {}\n"\
+                "must be: type = {}, value = {}"\
+                .format(value_type, current_value, "ui8", "20 <= val <= 100")
+            print(error_text, file=sys.stderr)
+            exit(1)
 
     return current_value
 
@@ -149,7 +190,10 @@ def set_current_battery_charge_limit(smc_binary_path, value) -> int:
         exit(1)
 
     # sudo ./smc -k BCLM -w 3c
-    set_value_out = subprocess.run([smc_binary_path, "-k", "BCLM", "-w", hex_value], capture_output=True)
+    if SMC_UTIL_FROM_APPLE:
+        set_value_out = subprocess.run([smc_binary_path, "-w", "BCLM", hex_value], capture_output=True)
+    else:
+        set_value_out = subprocess.run([smc_binary_path, "-k", "BCLM", "-w", hex_value], capture_output=True)
     # print(set_value_out)
     if (set_value_out.returncode != 0):
         print("ERROR: Battery limit value set failed:", file=sys.stderr)
@@ -192,7 +236,10 @@ def main():
     script_directory = os.path.dirname(os.path.realpath(__file__))
 
     # SMC binary path
-    smc_binary_path = get_smc_binary_path(script_directory)
+    if SMC_UTIL_FROM_APPLE:
+        smc_binary_path = get_smc_binary_path_from_apple(script_directory)
+    else:
+        smc_binary_path = get_smc_binary_path_from_fan_control(script_directory)
     
     # Arguments
     args = get_arguments()
