@@ -60,6 +60,8 @@ Other references:
 - [coconutbattery](https://www.coconut-flavour.com/coconutbattery/)
 - [smcFanControl](https://github.com/hholtmann/smcFanControl)
 - [libsmc](https://github.com/beltex/libsmc)
+- [smcutil](https://github.com/glexey/smcutil)
+- [smc_util](https://github.com/alexleigh/smc_util)
 - [VirtualSMC](https://github.com/acidanthera/VirtualSMC)
 - [osx-cpu-temp](https://github.com/lavoiesl/osx-cpu-temp)
 
