@@ -9,11 +9,9 @@ import re
 import sys
 import platform
 
-# TODO: There are some problems after set limit value in case of using smc util from SMCFanControl
-SMC_UTIL_FROM_APPLE = True
+SMC_UTIL_FROM_APPLE = False
 
-# "  BCLM  [ui8 ]  60 (bytes 3c)"
-OUTPUT_RE_SMC_FAN_CONTROL = re.compile(r"  BCLM  \[([a-z0-9]*)\s*\]  ([0-9a-f]+) \(bytes (.+)\)")
+OUTPUT_RE_SMC_FAN_CONTROL = re.compile(r"  BCLM  \[([a-z0-9]*)\s*\]  ([0-9a-f]+) \(bytes (.+)\)") # "  BCLM  [ui8 ]  60 (bytes 3c)"
 OUTPUT_RE_FROM_APPLE = re.compile(r"[0-9]+")
 
 PMSET_RE = re.compile(r"VACTDisabled[\s]+0")
@@ -167,10 +165,10 @@ def is_system_battery_care_activated()-> bool:
 
 
 def set_current_battery_charge_limit(smc_binary_path, value) -> int:
-    is_root = is_root_user()
-    if not is_root:
-        print("ERROR: Set limit must be run as root", file=sys.stderr)
-        exit(1)
+    # is_root = is_root_user()
+    # if not is_root:
+    #     print("ERROR: Set limit must be run as root", file=sys.stderr)
+    #     exit(1)
 
     if (value > 100) or (value < 20) or (not isinstance(value, int)):
         print("ERROR: New limit integer value must be: 20 <= val <= 100", file=sys.stderr)
@@ -191,9 +189,9 @@ def set_current_battery_charge_limit(smc_binary_path, value) -> int:
 
     # sudo ./smc -k BCLM -w 3c
     if SMC_UTIL_FROM_APPLE:
-        set_value_out = subprocess.run([smc_binary_path, "-w", "BCLM", hex_value], capture_output=True)
+        set_value_out = subprocess.run(["sudo", smc_binary_path, "-w", "BCLM", hex_value], capture_output=True)
     else:
-        set_value_out = subprocess.run([smc_binary_path, "-k", "BCLM", "-w", hex_value], capture_output=True)
+        set_value_out = subprocess.run(["sudo", smc_binary_path, "-k", "BCLM", "-w", hex_value], capture_output=True)
     # print(set_value_out)
     if (set_value_out.returncode != 0):
         print("ERROR: Battery limit value set failed:", file=sys.stderr)
