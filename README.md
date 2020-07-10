@@ -44,6 +44,10 @@ sudo python3 main.py -s 65
 # Reset maximum charge level to 100%
 sudo python3 main.py -r
 ```
+Sometimes homebrew's folders owner need to be fixed in case of some freezing on reboot.
+```
+sudo chown -R "$USER":admin /usr/local/*
+```
 
 Warning!
 ------------------------
