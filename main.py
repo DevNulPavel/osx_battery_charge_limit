@@ -187,11 +187,13 @@ def set_current_battery_charge_limit(smc_binary_path, value) -> int:
         print("ERROR: Value convert to hex failed, too short hex: {}".format(hex_value), file=sys.stderr)
         exit(1)
 
-    # sudo ./smc -k BCLM -w 3c
     if SMC_UTIL_FROM_APPLE:
+        # sudo ./smcutil -w BCLM 3c
         set_value_out = subprocess.run(["sudo", smc_binary_path, "-w", "BCLM", hex_value], capture_output=True)
     else:
+        # sudo ./smc -k BCLM -w 3c
         set_value_out = subprocess.run(["sudo", smc_binary_path, "-k", "BCLM", "-w", hex_value], capture_output=True)
+
     # print(set_value_out)
     if (set_value_out.returncode != 0):
         print("ERROR: Battery limit value set failed:", file=sys.stderr)
@@ -213,7 +215,7 @@ def change_battery_limit_value(smc_binary_path, value):
     if success:
         new_value = get_and_check_current_battery_charge_limit(smc_binary_path)
         print("New battery charge limit is {}%\n".format(new_value))
-        print('Please reboot your notebook and check applied limit value with "-c" flag')
+        print('Please reboot your notebook and check applied limit value with "-c" flag!\n')
     else:
         print("ERROR: Battery limit value set failed", file=sys.stderr)
         exit(1)
@@ -242,6 +244,7 @@ def main():
     # Arguments
     args = get_arguments()
 
+    # Perform command
     if args.current:
         print_current_limit(smc_binary_path)
     elif args.set:
