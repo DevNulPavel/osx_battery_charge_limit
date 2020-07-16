@@ -1,6 +1,7 @@
 .pyc
 .idea
 .DS_store
+.vscode
 
 smc-command/*.o
 smc-command/smc
