@@ -17,8 +17,9 @@ You can reset macbook's SMC for rollback script changes in case of some problems
 Tests 
 ------------------------
 Tested on:
-- Macbook Pro 13 (mid 2020, 2 ports), OSX Catalina 10.15.5
-- Macbook Pro 13 (mid 2019, 4 ports), OSX Catalina 10.15.5, 10.15.6
+- Macbook Pro 13 (mid 2020, 2 ports), OSX Catalina (10.15.5)
+- Macbook Pro 13 (mid 2019, 4 ports), OSX Catalina (10.15.5, 10.15.6)
+- Macbook Air 13 (mid 2011), OSX High Sierra
 
 Requirements
 ------------------------
