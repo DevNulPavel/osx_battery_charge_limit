@@ -23,17 +23,28 @@ Tested on:
 
 Requirements
 ------------------------
+All commands must be written in Terminal application step-by-step
 ```
-# Python3
-brew install python3
-
-# Command-line tools
+# 1. Install command-line tools
 xcode-select --install
+
+# 2. Install Homebrew
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+# 3. Install Python3
+brew install python3
 ```
 
 Usage examples
 ------------------------
 __Highly recomended turn off OSX Catalina 10.15.5 system battery care function before set limit value!__ Reboot is recommended after changing value.  System update can reset SMC, and you will need to start script to set limit again.
+
+All commands must be called in osx_battery_charge_limit folder. Change folder example:
+
+```
+cd ~/Downloads/osx_battery_charge_limit/
+```
+Usage:
 ```
 # Get current charge limit
 python3 main.py
