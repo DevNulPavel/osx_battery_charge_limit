@@ -5,7 +5,7 @@ Li-ion and polymer batteries (like the one in your MacBook) last the longest whe
 
 Script info
 ------------------------
-This is script for changing maximum battery charge value on macbook with set SMC key value. 
+This is script for changing maximum battery charge value on macbook by setting SMC's value. 
 It uses *smc-command* binary from smcFanControl project for SMC keys access [smcFanControl](https://github.com/hholtmann/smcFanControl "smcFanControl"). 
 
 Script changes SMC key "BCLM" (Battery control level maximum). Script sets maximum battery charge percent value from 20% to 100%.
