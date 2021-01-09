@@ -71,6 +71,10 @@ Alternatives with GUI:
 - [BatteryStatusShow](https://github.com/sicreative/BatteryStatusShow)
 - [charge-limiter](https://github.com/godly-devotion/charge-limiter)
 
+Alternatives without GUI:
+------------------------
+- [bclm](https://github.com/zackelia/bclm)
+
 Other references:
 ------------------------
 - [coconutbattery](https://www.coconut-flavour.com/coconutbattery/)
