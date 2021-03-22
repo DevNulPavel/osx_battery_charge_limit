@@ -1,4 +1,4 @@
-MacOS / OSX limit maximum battery charge.
+MacOS / OSX limit maximum battery charge (Intel macbooks only).
 ========================
 
 Li-ion and polymer batteries (like the one in your MacBook) last the longest when operating between 30 and 80 percent. Keeping your battery at 100% at all times can shorten the lifespan of your notebook significantly. More information can be found here: https://batteryuniversity.com/learn/article/how_to_charge_when_to_charge_table
